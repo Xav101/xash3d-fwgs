@@ -41,6 +41,8 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, qboolean *loaded )
 
 	if( loaded ) *loaded = false;
 	pin = (dsprite_t *)buffer;
+	LittleLongSW(pin->ident);
+	LittleLongSW(pin->version);
 	mod->type = mod_sprite;
 	i = pin->version;
 
@@ -62,6 +64,15 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, qboolean *loaded )
 	if( i == SPRITE_VERSION_Q1 || i == SPRITE_VERSION_32 )
 	{
 		pinq1 = (dsprite_q1_t *)buffer;
+
+		LittleLongSW(pinq1->type);
+		pinq1->boundingradius = LittleFloat(pinq1->boundingradius);
+		LittleLongSW(pinq1->bounds[0]);
+		LittleLongSW(pinq1->bounds[1]);
+		LittleLongSW(pinq1->numframes);
+		pinq1->beamlength = LittleFloat(pinq1->beamlength);
+		LittleLongSW(pinq1->synctype);
+
 		size = sizeof( msprite_t ) + ( pinq1->numframes - 1 ) * sizeof( psprite->frames );
 		psprite = Mem_Calloc( mod->mempool, size );
 		mod->cache.data = psprite;	// make link to extradata
@@ -86,6 +97,16 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, qboolean *loaded )
 	else // if( i == SPRITE_VERSION_HL )
 	{
 		pinhl = (dsprite_hl_t *)buffer;
+
+		LittleLongSW(pinhl->type);
+		LittleLongSW(pinhl->texFormat);
+		LittleLongSW(pinhl->boundingradius);
+		LittleLongSW(pinhl->bounds[0]);
+		LittleLongSW(pinhl->bounds[1]);
+		LittleLongSW(pinhl->numframes);
+		LittleLongSW(pinhl->facetype);
+		LittleLongSW(pinhl->synctype);
+
 		size = sizeof( msprite_t ) + ( pinhl->numframes - 1 ) * sizeof( psprite->frames );
 		psprite = Mem_Calloc( mod->mempool, size );
 		mod->cache.data = psprite;	// make link to extradata

@@ -209,6 +209,8 @@ static zip_t *FS_LoadZip( const char *zipfile, int *error )
 
 	c = FS_Read( zip->handle, &signature, sizeof( signature ));
 
+	LittleLongSW(signature);
+
 	if( c != sizeof( signature ) || signature == ZIP_HEADER_EOCD )
 	{
 		Con_Reportf( S_WARN "%s has no files. Ignored.\n", zipfile );
@@ -239,6 +241,8 @@ static zip_t *FS_LoadZip( const char *zipfile, int *error )
 		FS_Seek( zip->handle, filepos, SEEK_SET );
 		c = FS_Read( zip->handle, &signature, sizeof( signature ));
 
+		LittleLongSW(signature);
+
 		if( c == sizeof( signature ) && signature == ZIP_HEADER_EOCD )
 			break;
 
@@ -257,6 +261,14 @@ static zip_t *FS_LoadZip( const char *zipfile, int *error )
 	}
 
 	c = FS_Read( zip->handle, &header_eocd, sizeof( header_eocd ));
+
+	LittleShortSW(header_eocd.disk_number);
+	LittleShortSW(header_eocd.start_disk_number);
+	LittleShortSW(header_eocd.number_central_directory_record);
+	LittleShortSW(header_eocd.total_central_directory_record);
+	LittleLongSW(header_eocd.size_of_central_directory);
+	LittleLongSW(header_eocd.central_directory_offset);
+	LittleShortSW(header_eocd.commentary_len);
 
 	if( c != sizeof( header_eocd ))
 	{
@@ -290,6 +302,24 @@ static zip_t *FS_LoadZip( const char *zipfile, int *error )
 	for( i = 0; i < header_eocd.total_central_directory_record; i++ )
 	{
 		c = FS_Read( zip->handle, &header_cdf, sizeof( header_cdf ));
+
+		LittleLongSW(header_cdf.signature);
+		LittleShortSW(header_cdf.version);
+		LittleShortSW(header_cdf.version_need);
+		LittleShortSW(header_cdf.generalPurposeBitFlag);
+		LittleShortSW(header_cdf.flags);
+		LittleShortSW(header_cdf.modification_time);
+		LittleShortSW(header_cdf.modification_date);
+		LittleLongSW(header_cdf.crc32);
+		LittleLongSW(header_cdf.compressed_size);
+		LittleLongSW(header_cdf.uncompressed_size);
+		LittleShortSW(header_cdf.filename_len);
+		LittleShortSW(header_cdf.extrafield_len);
+		LittleShortSW(header_cdf.file_commentary_len);
+		LittleShortSW(header_cdf.disk_start);
+		LittleShortSW(header_cdf.internal_attr);
+		LittleLongSW(header_cdf.external_attr);
+		LittleLongSW(header_cdf.local_header_offset);
 
 		if( c != sizeof( header_cdf ) || header_cdf.signature != ZIP_HEADER_CDF )
 		{
@@ -353,6 +383,17 @@ static zip_t *FS_LoadZip( const char *zipfile, int *error )
 
 		FS_Seek( zip->handle, info[i].offset, SEEK_SET );
 		c = FS_Read( zip->handle, &header, sizeof( header ) );
+		
+		LittleLongSW(header.signature);
+		LittleShortSW(header.version);
+		LittleShortSW(header.flags);
+		LittleShortSW(header.compression_flags);
+		LittleLongSW(header.dos_date);
+		LittleLongSW(header.crc32);
+		LittleLongSW(header.compressed_size);
+		LittleLongSW(header.uncompressed_size);
+		LittleShortSW(header.filename_len);
+		LittleShortSW(header.extrafield_len);
 
 		if( c != sizeof( header ))
 		{
