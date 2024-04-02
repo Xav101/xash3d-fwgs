@@ -305,6 +305,9 @@ static wfile_t *W_Open( const char *filename, int *error, uint flags )
 		return NULL;
 	}
 
+	LittleLongSW(header.numlumps);
+	LittleLongSW(header.infotableofs);
+
 	if( header.ident != IDWAD2HEADER && header.ident != IDWAD3HEADER )
 	{
 		Con_Reportf( S_ERROR "%s: %s is not a WAD2 or WAD3 file\n", __func__, filename );
@@ -362,6 +365,10 @@ static wfile_t *W_Open( const char *filename, int *error, uint flags )
 	{
 		char	name[16];
 		int	k;
+
+		LittleLongSW(srclumps[i].filepos);
+		LittleLongSW(srclumps[i].disksize);
+		LittleLongSW(srclumps[i].size);
 
 		// cleanup lumpname
 		Q_strnlwr( srclumps[i].name, name, sizeof( srclumps[i].name ));

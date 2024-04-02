@@ -208,8 +208,8 @@ const char *Q_ArchitectureStringByID( const int arch, const uint abi, const int 
 			return is64 ? "riscv64d" : "riscv32d";
 		}
 		break;
-	case ARCHITECTURE_WASM:
-		return is64 ? "wasm64" : "wasm32";
+	case ARCHITECTURE_S390X:
+		return "s390x";
 	}
 
 	assert( 0 );
