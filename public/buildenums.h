@@ -97,6 +97,7 @@ GNU General Public License for more details.
 #define ARCHITECTURE_RISCV   8
 #define ARCHITECTURE_PPC     9
 #define ARCHITECTURE_WASM    10
+#define ARCHITECTURE_S390X   11
 
 #if XASH_AMD64
 	#define XASH_ARCHITECTURE ARCHITECTURE_AMD64
@@ -116,6 +117,8 @@ GNU General Public License for more details.
 	#define XASH_ARCHITECTURE ARCHITECTURE_PPC
 #elif XASH_WASM
 	#define XASH_ARCHITECTURE ARCHITECTURE_WASM
+#elif XASH_S390X
+	#define XASH_ARCHITECTURE ARCHITECTURE_S390X
 #else
 	#error
 #endif

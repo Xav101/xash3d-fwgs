@@ -872,6 +872,13 @@ static char *SV_ReadEntityScript( const char *filename, int *flags )
 	memset( buf, 0, MAX_TOKEN );
 	FS_Read( f, buf, MAX_TOKEN );
 
+	LittleLongSW(header->version);
+
+	for (int i = 0; i < HEADER_LUMPS; i++) {
+		LittleLongSW(header->lumps[i].fileofs);
+		LittleLongSW(header->lumps[i].filelen);
+	}
+
 	// check all the lumps and some other errors
 	if( !Mod_TestBmodelLumps( f, bspfilename, buf, (host_developer.value) ? false : true, &entities ))
 	{
@@ -2677,6 +2684,7 @@ static void GAME_EXPORT pfnMessageEnd( void )
 			}
 
 			realsize = svgame.msg_realsize;
+			LittleShortSW(realsize);
 			memcpy( &sv.multicast.pData[svgame.msg_size_index], &realsize, sizeof( realsize ));
 		}
 	}
@@ -2710,6 +2718,7 @@ static void GAME_EXPORT pfnMessageEnd( void )
 		}
 
 		realsize = svgame.msg_realsize;
+		LittleShortSW(realsize);
 		memcpy( &sv.multicast.pData[svgame.msg_size_index], &realsize, sizeof( realsize ));
 	}
 	else
