@@ -857,6 +857,7 @@ static char *SV_ReadEntityScript( const char *filename, int *flags )
 	int		lumpofs = 0, lumplen = 0;
 	byte		buf[MAX_TOKEN];
 	char		*ents = NULL;
+	dheader_t	*header;
 	dlump_t entities;
 	size_t		ft1, ft2;
 	file_t		*f;
@@ -871,6 +872,7 @@ static char *SV_ReadEntityScript( const char *filename, int *flags )
 	SetBits( *flags, MAP_IS_EXIST );
 	memset( buf, 0, MAX_TOKEN );
 	FS_Read( f, buf, MAX_TOKEN );
+	header = (dheader_t *)buf;
 
 	LittleLongSW(header->version);
 
