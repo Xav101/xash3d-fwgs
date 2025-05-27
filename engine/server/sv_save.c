@@ -658,7 +658,11 @@ static void DirectoryCopy( const char *pPath, file_t *pFile )
 		memset( szName, 0, sizeof( szName )); // clearing the string to prevent garbage in output file
 		Q_strncpy( szName, COM_FileWithoutPath( t->filenames[i] ), sizeof( szName ));
 		FS_Write( pFile, szName, MAX_OSPATH );
+
+		LittleLongSW(fileSize);
 		FS_Write( pFile, &fileSize, sizeof( int ));
+		LittleLongSW(fileSize);
+
 		FS_FileCopy( pFile, pCopy, fileSize );
 		FS_Close( pCopy );
 	}
@@ -684,6 +688,9 @@ static void DirectoryExtract( file_t *pFile, int fileCount )
 		// filename can only be as long as a map name + extension
 		FS_Read( pFile, szName, MAX_OSPATH );
 		FS_Read( pFile, &fileSize, sizeof( int ));
+
+		LittleLongSW(fileSize);
+
 		Q_snprintf( fileName, sizeof( fileName ), DEFAULT_SAVE_DIRECTORY "%s", szName );
 		COM_FixSlashes( fileName );
 
@@ -852,6 +859,9 @@ static int GetClientDataSize( const char *level )
 		return 0;
 
 	FS_Read( pFile, &id, sizeof( id ));
+
+	LittleLongSW(id);
+
 	if( id != SAVEGAME_HEADER )
 	{
 		FS_Close( pFile );
@@ -859,6 +869,9 @@ static int GetClientDataSize( const char *level )
 	}
 
 	FS_Read( pFile, &version, sizeof( version ));
+
+	LittleLongSW(version);
+
 	if( version != CLIENT_SAVEGAME_VERSION )
 	{
 		FS_Close( pFile );
@@ -869,6 +882,10 @@ static int GetClientDataSize( const char *level )
 	FS_Read( pFile, &tokenCount, sizeof( int ));
 	FS_Read( pFile, &tokenSize, sizeof( int ));
 	FS_Close( pFile );
+
+	LittleLongSW(size);
+	LittleLongSW(tokenCount);
+	LittleLongSW(tokenSize);
 
 	return ( size + tokenSize );
 }
@@ -905,6 +922,9 @@ static SAVERESTOREDATA *LoadSaveData( const char *level )
 	FS_Read( pFile, &id, sizeof( int ));
 	FS_Read( pFile, &version, sizeof( int ));
 
+	LittleLongSW(id);
+	LittleLongSW(version);
+
 	// is this a valid save?
 	if( id != SAVEFILE_HEADER || version != SAVEGAME_VERSION )
 	{
@@ -917,6 +937,11 @@ static SAVERESTOREDATA *LoadSaveData( const char *level )
 	FS_Read( pFile, &tableCount, sizeof( int ));	// entities count to right initialize entity table
 	FS_Read( pFile, &tokenCount, sizeof( int ));	// num hash tokens to prepare token table
 	FS_Read( pFile, &tokenSize, sizeof( int ));	// total size of hash tokens
+
+	LittleLongSW(size);
+	LittleLongSW(tableCount);
+	LittleLongSW(tokenCount);
+	LittleLongSW(tokenSize);
 
 	// determine highest size of seve-restore buffer
 	// because it's used twice: for HL1 and HL2 restore
@@ -1016,13 +1041,19 @@ static void EntityPatchWrite( SAVERESTOREDATA *pSaveData, const char *level )
 			size++;
 	}
 
+	LittleLongSW(size);
+
 	// patch count
 	FS_Write( pFile, &size, sizeof( int ));
 
 	for( i = 0; i < pSaveData->tableCount; i++ )
 	{
 		if( FBitSet( pSaveData->pTable[i].flags, FENTTABLE_REMOVED ))
+		{
+			LittleLongSW(i);
 			FS_Write( pFile, &i, sizeof( int ));
+			LittleLongSW(i);
+		}
 	}
 
 	FS_Close( pFile );
@@ -1248,13 +1279,26 @@ static void SaveClientState( SAVERESTOREDATA *pSaveData, const char *level, int 
 	version = CLIENT_SAVEGAME_VERSION;
 	id = SAVEGAME_HEADER;
 
+	LittleLongSW(id);
+	LittleLongSW(version);
+	LittleLongSW(pSaveData->size);
+
 	FS_Write( pFile, &id, sizeof( id ));
 	FS_Write( pFile, &version, sizeof( version ));
 	FS_Write( pFile, &pSaveData->size, sizeof( int )); // does not include token table
 
+	LittleLongSW(pSaveData->size);
+
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
+
 	// write out the tokens first so we can load them before we load the entities
 	FS_Write( pFile, &pSaveData->tokenCount, sizeof( int ));
 	FS_Write( pFile, &pSaveData->tokenSize, sizeof( int ));
+
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
+
 	FS_Write( pFile, pTokenData, pSaveData->tokenSize );
 	FS_Write( pFile, pSaveData->pBaseData, pSaveData->size ); // header and globals
 	FS_Close( pFile );
@@ -1284,6 +1328,7 @@ static void LoadClientState( SAVERESTOREDATA *pSaveData, const char *level, qboo
 		return; // something bad is happens
 
 	FS_Read( pFile, &id, sizeof( id ));
+	LittleLongSW(id);
 	if( id != SAVEGAME_HEADER )
 	{
 		FS_Close( pFile );
@@ -1291,6 +1336,7 @@ static void LoadClientState( SAVERESTOREDATA *pSaveData, const char *level, qboo
 	}
 
 	FS_Read( pFile, &version, sizeof( version ));
+	LittleLongSW(version);
 	if( version != CLIENT_SAVEGAME_VERSION )
 	{
 		FS_Close( pFile );
@@ -1300,6 +1346,10 @@ static void LoadClientState( SAVERESTOREDATA *pSaveData, const char *level, qboo
 	FS_Read( pFile, &size, sizeof( int ));
 	FS_Read( pFile, &tokenCount, sizeof( int ));
 	FS_Read( pFile, &tokenSize, sizeof( int ));
+
+	LittleLongSW(size);
+	LittleLongSW(tokenCount);
+	LittleLongSW(tokenSize);
 
 	// sanity check
 	ASSERT( pSaveData->bufferSize >= ( size + tokenSize ));
@@ -1567,15 +1617,29 @@ static SAVERESTOREDATA *SaveGameState( int changelevel )
 	version = SAVEGAME_VERSION;
 	id = SAVEFILE_HEADER;
 
+	LittleLongSW(id);
+	LittleLongSW(version);
+
 	// write the header
 	FS_Write( pFile, &id, sizeof( id ));
 	FS_Write( pFile, &version, sizeof( version ));
+
+	LittleLongSW(pSaveData->size);
+	LittleLongSW(pSaveData->tableCount);
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
 
 	// Write out the tokens and table FIRST so they are loaded in the right order, then write out the rest of the data in the file.
 	FS_Write( pFile, &pSaveData->size, sizeof( int ));	// total size of all data to initialize read buffer
 	FS_Write( pFile, &pSaveData->tableCount, sizeof( int ));	// entities count to right initialize entity table
 	FS_Write( pFile, &pSaveData->tokenCount, sizeof( int ));	// num hash tokens to prepare token table
 	FS_Write( pFile, &pSaveData->tokenSize, sizeof( int ));	// total size of hash tokens
+
+	LittleLongSW(pSaveData->size);
+	LittleLongSW(pSaveData->tableCount);
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
+
 	FS_Write( pFile, pTokenData, pSaveData->tokenSize );	// write tokens into the file
 	FS_Write( pFile, pTableData, tableSize );		// dump ETABLE structures
 	FS_Write( pFile, pSaveData->pBaseData, dataSize );	// and finally store all the other data
@@ -1725,13 +1789,26 @@ static qboolean SaveGameSlot( const char *pSaveName, const char *pSaveComment )
 	version = SAVEGAME_VERSION;
 	id = SAVEGAME_HEADER;
 
+	LittleLongSW(version);
+	LittleLongSW(id);
+	LittleLongSW(pSaveData->size);
+
 	FS_Write( pFile, &id, sizeof( id ));
 	FS_Write( pFile, &version, sizeof( version ));
 	FS_Write( pFile, &pSaveData->size, sizeof( int )); // does not include token table
 
+	LittleLongSW(pSaveData->size);
+
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
+
 	// write out the tokens first so we can load them before we load the entities
 	FS_Write( pFile, &pSaveData->tokenCount, sizeof( int ));
 	FS_Write( pFile, &pSaveData->tokenSize, sizeof( int ));
+
+	LittleLongSW(pSaveData->tokenCount);
+	LittleLongSW(pSaveData->tokenSize);
+
 	FS_Write( pFile, pTokenData, pSaveData->tokenSize );
 	FS_Write( pFile, pSaveData->pBaseData, pSaveData->size ); // header and globals
 
@@ -1756,6 +1833,9 @@ static int SaveReadHeader( file_t *pFile, GAME_HEADER *pHeader )
 	SAVERESTOREDATA	*pSaveData;
 
 	FS_Read( pFile, &id, sizeof( id ));
+	
+	LittleLongSW(id);
+	
 	if( id != SAVEGAME_HEADER )
 	{
 		FS_Close( pFile );
@@ -1763,6 +1843,9 @@ static int SaveReadHeader( file_t *pFile, GAME_HEADER *pHeader )
 	}
 
 	FS_Read( pFile, &version, sizeof( version ));
+	
+	LittleLongSW(version);
+	
 	if( version != SAVEGAME_VERSION )
 	{
 		FS_Close( pFile );
@@ -1772,6 +1855,10 @@ static int SaveReadHeader( file_t *pFile, GAME_HEADER *pHeader )
 	FS_Read( pFile, &size, sizeof( int ));
 	FS_Read( pFile, &tokenCount, sizeof( int ));
 	FS_Read( pFile, &tokenSize, sizeof( int ));
+
+	LittleLongSW(size);
+	LittleLongSW(tokenCount);
+	LittleLongSW(tokenSize);
 
 	pSaveData = SaveInit( size + tokenSize, tokenCount );
 	pSaveData->tokenCount = tokenCount;
