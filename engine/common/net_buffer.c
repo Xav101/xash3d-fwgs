@@ -877,7 +877,7 @@ static void Test_Buffer_Write( void )
 
 	MSG_Init( &sb, __func__, testdata, sizeof( testdata ));
 	TASSERT_EQi( sb.iCurBit, 0 );
-	TASSERT_EQi( sb.nDataBits, sizeof( testdata ) << 3 );
+	TASSERT_EQi( sb.nDataBits, (int)( sizeof( testdata ) << 3 ) );
 	TASSERT_EQp( sb.pData, (void *)testdata );
 	TASSERT_EQi( sb.bOverflow, false );
 
@@ -913,9 +913,9 @@ static void Test_Buffer_Write( void )
 	TASSERT_EQi( sb.bOverflow, false );
 	TASSERT_EQi( sb.iCurBit, 92 );
 
-	TASSERT_EQi( MSG_GetNumBitsWritten( &sb ), g_testbuf_bits );
+	TASSERT_EQi( MSG_GetNumBitsWritten( &sb ), (int)g_testbuf_bits );
 	TASSERT_EQi( MSG_GetNumBytesWritten( &sb ), BitByte( g_testbuf_bits ));
-	TASSERT_EQi( MSG_GetRealBytesWritten( &sb ), g_testbuf_bits >> 3 );
+	TASSERT_EQi( MSG_GetRealBytesWritten( &sb ), (int)( g_testbuf_bits >> 3 ) );
 
 	// if tests fails here on big endian, it's possible due to endian issues
 	TASSERT( !memcmp( sb.pData, g_testbuf, g_testbuf_bits >> 3 ));
@@ -933,7 +933,7 @@ static void Test_Buffer_Read( void )
 
 	MSG_StartReading( &sb, (void *)g_testbuf, -1, 0, g_testbuf_bits );
 	TASSERT_EQi( sb.iCurBit, 0 );
-	TASSERT_EQi( sb.nDataBits, g_testbuf_bits );
+	TASSERT_EQi( sb.nDataBits, (int)g_testbuf_bits );
 	TASSERT_EQp( sb.pData, (void *)g_testbuf );
 	TASSERT_EQi( sb.bOverflow, false );
 
@@ -994,7 +994,7 @@ static void Test_Buffer_ExciseBits( void )
 	MSG_ExciseBits( &sb, 16, 32 );
 
 	TASSERT_EQi( MSG_CheckOverflow( &sb ), false );
-	TASSERT_EQi( MSG_GetMaxBits( &sb ), g_testbuf_bits - 32 );
+	TASSERT_EQi( MSG_GetMaxBits( &sb ), (int)( g_testbuf_bits - 32 ) );
 	TASSERT( !memcmp( MSG_GetData( &sb ), "as\xba\xa1\xed\xc8\x15", 7 ));
 
 	MSG_SeekToBit( &sb, 7 << 3, SEEK_SET );
