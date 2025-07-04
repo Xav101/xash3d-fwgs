@@ -2356,6 +2356,7 @@ int GAME_EXPORT SV_GetSaveComment( const char *savename, char *comment )
 	}
 
 	FS_Read( f, &tag, sizeof( int ));
+	LittleLongSW(tag);
 	if( tag != SAVEGAME_HEADER )
 	{
 		// invalid header
@@ -2365,6 +2366,7 @@ int GAME_EXPORT SV_GetSaveComment( const char *savename, char *comment )
 	}
 
 	FS_Read( f, &tag, sizeof( int ));
+	LittleLongSW(tag);
 
 	if( tag == 0x0065 )
 	{
@@ -2394,6 +2396,9 @@ int GAME_EXPORT SV_GetSaveComment( const char *savename, char *comment )
 	FS_Read( f, &size, sizeof( int ));
 	FS_Read( f, &tokenCount, sizeof( int ));	// These two ints are the token list
 	FS_Read( f, &tokenSize, sizeof( int ));
+	LittleLongSW(size);
+	LittleLongSW(tokenCount);
+	LittleLongSW(tokenSize);
 	size += tokenSize;
 
 	// sanity check.
@@ -2430,9 +2435,9 @@ int GAME_EXPORT SV_GetSaveComment( const char *savename, char *comment )
 	else pTokenList = NULL;
 
 	// short, short (size, index of field name)
-	nFieldSize = *(short *)pData;
+	nFieldSize = LittleShort(*(short *)pData);
 	pData += sizeof( short );
-	pFieldName = pTokenList[*(short *)pData];
+	pFieldName = pTokenList[LittleShort(*(short *)pData)];
 
 	if( Q_stricmp( pFieldName, "GameHeader" ))
 	{
@@ -2456,10 +2461,10 @@ int GAME_EXPORT SV_GetSaveComment( const char *savename, char *comment )
 		// Size
 		// szName
 		// Actual Data
-		nFieldSize = *(short *)pData;
+		nFieldSize = LittleShort(*(short *)pData);
 		pData += sizeof( short );
 
-		pFieldName = pTokenList[*(short *)pData];
+		pFieldName = pTokenList[LittleShort(*(short *)pData)];
 		pData += sizeof( short );
 
 		size = Q_min( nFieldSize, MAX_STRING );
