@@ -112,7 +112,7 @@ void Posix_Daemonize( void )
 		if( daemon > 0 )
 		{
 			// parent
-			Con_Reportf( "Child pid: %i\n", daemon );
+			Con_Reportf( "Child pid: %ld\n", daemon );
 			exit( 0 );
 		}
 		else
