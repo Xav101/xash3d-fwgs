@@ -831,7 +831,7 @@ static int Mod_StudioBodyVariations( model_t *mod )
 R_StudioLoadHeader
 =================
 */
-static studiohdr_t *R_StudioLoadHeader( model_t *mod, const void *buffer )
+studiohdr_t *R_StudioLoadHeader( model_t *mod, const void *buffer )
 {
 	byte		*pin;
 	studiohdr_t	*phdr;
@@ -909,8 +909,8 @@ static studiohdr_t *R_StudioLoadHeader( model_t *mod, const void *buffer )
 	m_pSubModel = (mstudiomodel_t *)(&pbodypart[phdr->numbodyparts]);
 
 	for (int i = 0; i < phdr->numbones; i++) {
-		LittleLongSW(pbones[i].parent);
-		LittleLongSW(pbones[i].unused);
+		ULittleLongSW(pbones[i].parent);
+		ULittleLongSW(pbones[i].unused);
 		for (int j = 0; j < 6; j++) {
 			LittleLongSW(pbones[i].bonecontroller[j]);
 			pbones[i].value[j] = LittleFloat(pbones[i].value[j]);
