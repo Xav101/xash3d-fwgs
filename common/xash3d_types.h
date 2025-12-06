@@ -275,6 +275,12 @@ static void _swap_unaligned16le( uint16_t *x )
 	memcpy( x, (uint8_t*)&a, sizeof(uint16_t) );
 }
 
+static void _swap_unaligned32le( uint32_t *x )
+{
+	uint32_t a = _unaligned32le( x );
+	memcpy( x, (uint8_t*)&a, sizeof(uint32_t) );
+}
+
 #if XASH_LITTLE_ENDIAN
 #define _unaligned16( x ) ( _unaligned16le( x ) )
 #define _unaligned32( x ) ( _unaligned32le( x ) )
