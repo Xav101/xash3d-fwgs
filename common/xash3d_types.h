@@ -209,8 +209,8 @@ typedef int qboolean;
 		STATIC_ASSERT( sizeof( type ) == size32, #type " unexpected size" )
 #endif
 
-#define Swap32( x ) (((uint32_t)((( x ) & 255 ) << 24 )) + ((uint32_t)(((( x ) >> 8 ) & 255 ) << 16 )) + ((uint32_t)((( x ) >> 16 ) & 255 ) << 8 ) + ((( x ) >> 24 ) & 255 ))
-#define Swap16( x ) ((uint16_t)((((uint16_t)( x ) >> 8 ) & 255 ) + (((uint16_t)( x ) & 255 ) << 8 )))
+#define Swap32( x ) (((int)(((x)&255)<<24)) + ((int)((((x)>>8)&255)<<16)) + ((int)(((x)>>16)&255)<<8) + (((x) >> 24)&255))
+#define Swap16( x ) ((short)( (((short)(x) >> 8) & 255) + (((short)(x) & 255) << 8)))
 #define Swap32Store( x ) ( x = Swap32( x ))
 #define Swap16Store( x ) ( x = Swap16( x ))
 
