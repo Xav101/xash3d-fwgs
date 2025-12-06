@@ -21,6 +21,7 @@ GNU General Public License for more details.
 #include "ref_common.h"
 #endif // XASH_DEDICATED
 #include "mod_local.h"
+#include "xash3d_mathlib.h"
 
 
 /*
