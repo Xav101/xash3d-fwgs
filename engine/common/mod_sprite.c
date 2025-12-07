@@ -33,7 +33,7 @@ load sprite model
 */
 void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, qboolean *loaded )
 {
-	const dsprite_t *pin = buffer;
+	dsprite_t *pin = buffer;
 	msprite_t *psprite;
 	char poolname[MAX_VA_STRING];
 
@@ -83,7 +83,7 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, q
 
 	if( pin->version == SPRITE_VERSION_Q1 || pin->version == SPRITE_VERSION_32 )
 	{
-		const dsprite_q1_t *pinq1 = buffer;
+		dsprite_q1_t *pinq1 = buffer;
 		size_t size;
 
 		LittleLongSW(pinq1->numframes);
@@ -124,7 +124,7 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, q
 	}
 	else // if( pin->version == SPRITE_VERSION_HL )
 	{
-		const dsprite_hl_t *pinhl = buffer;
+		dsprite_hl_t *pinhl = buffer;
 		size_t size;
 
 		LittleLongSW(pinhl->numframes);
