@@ -45,6 +45,9 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, q
 		return;
 	}
 
+	LittleLongSW(pin->ident);
+	LittleLongSW(pin->version);
+
 	if( pin->ident != IDSPRITEHEADER )
 	{
 		Con_DPrintf( S_ERROR "%s: %s has wrong id (0x%x should be 0x%x)\n", __func__, mod->name, pin->ident, IDSPRITEHEADER );
@@ -82,11 +85,20 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, q
 		const dsprite_q1_t *pinq1 = buffer;
 		size_t size;
 
+		LittleLongSW(pinq1->numframes);
 		if( pinq1->numframes == 0 )
 		{
 			Con_DPrintf( S_ERROR "%s: %s has no frames\n", __func__, mod->name );
 			return;
 		}
+
+		LittleLongSW(pinq1->type);
+		pinq1->boundingradius = LittleFloat(pinq1->boundingradius);
+		LittleLongSW(pinq1->bounds[0]);
+		LittleLongSW(pinq1->bounds[1]);
+		
+		pinq1->beamlength = LittleFloat(pinq1->beamlength);
+		LittleLongSW(pinq1->synctype);
 
 		size = sizeof( msprite_t ) + ( pinq1->numframes - 1 ) * sizeof( psprite->frames );
 
@@ -114,11 +126,20 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, size_t buffersize, q
 		const dsprite_hl_t *pinhl = buffer;
 		size_t size;
 
+		LittleLongSW(pinhl->numframes);
 		if( pinhl->numframes == 0 )
 		{
 			Con_DPrintf( S_WARN "%s: %s has no frames\n", __func__, mod->name );
 			return;
 		}
+
+		LittleLongSW(pinhl->type);
+		LittleLongSW(pinhl->texFormat);
+		LittleLongSW(pinhl->boundingradius);
+		LittleLongSW(pinhl->bounds[0]);
+		LittleLongSW(pinhl->bounds[1]);
+		LittleLongSW(pinhl->facetype);
+		LittleLongSW(pinhl->synctype);
 
 		size = sizeof( msprite_t ) + ( pinhl->numframes - 1 ) * sizeof( psprite->frames );
 
